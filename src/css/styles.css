@@ -6,16 +6,18 @@
 
 body {
     background-color: #e3f2fd;
-    height: 100vh;
+    height: 200vh;
+    display: flex;
+    justify-content: space-around;
 }
 
-.select-menu {
+.sbx-select-menu {
     width: 20rem;
-    margin: 30rem auto;
+    margin: 35rem auto;
     position: relative;
 }
 
-.select-menu .select-btn {
+.sbx-select-menu .sbx-select-btn {
     display: flex;
     background-color: #fff;
     padding: 1rem;
@@ -28,12 +30,12 @@ body {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.select-btn i {
+.sbx-select-btn i {
     font-size: 1rem;
     transition: all 0.2s linear;
 }
 
-.select-container {
+.sbx-select-container {
     position: absolute;
     margin-top: 1rem;
     border-radius: .5rem;
@@ -49,11 +51,11 @@ body {
     transition: max-height 0.1s linear;
 }
 
-.hide {
+.sbx-hide {
     display: none !important;
 }
 
-.height {
+.sbx-height {
     max-height: 20rem;
 }
 
@@ -72,12 +74,12 @@ body {
     border-radius: 10rem;
 }
 
-.open-up {
+.sbx-open-up {
     bottom: 4rem;
     top: initial;
 }
 
-.select-container .option {
+.sbx-select-container .sbx-option {
     display: flex;
     cursor: pointer;
     padding: .5rem;
@@ -85,14 +87,14 @@ body {
     background-color: #fff;
 }
 
-.search #input-search {
+.sbx-search #sbx-input-search {
     padding: .5rem 1rem;
     border: none;
     width: 100%;
     font-size: 1rem;
 }
 
-.search {
+.sbx-search {
     display: flex;
     align-items: center;
     padding: 0 1rem;
@@ -101,45 +103,44 @@ body {
     margin-bottom: .5rem;
 }
 
-.search:hover,.search 
-#input-search:hover,
-.search:hover #input-search {
+.sbx-search:hover,.sbx-search 
+#sbx-input-search:hover,
+.sbx-search:hover #sbx-input-search {
     background-color: #f2f2f2;
 }
 
-.search #input-search:focus {
+.sbx-search #sbx-input-search:focus {
     outline: none;
 }
 
-.select-container .option:hover {
+.sbx-select-container .sbx-option:hover {
     background-color: #f2f2f2;
 }
 
-.option i {
+.sbx-option i {
     font-size: 1rem;
     margin-right: 1rem;
 }
 
-.option:hover i{
+.sbx-option:hover i{
     color: rgb(5, 5, 5);
     text-shadow: 0 1px 0 #000;
 }
 
-
-.option .option-text {
+.sbx-option .sbx-option-text {
     font-size: 1.1rem;
     color: #333;
 }
 
-.rotate-down {
+.sbx-rotate-down {
     transform: rotate(-90deg);
 }
 
-.rotate-up {
+.sbx-rotate-up {
     transform: rotate(90deg);
 }
 
-.disabled {
+.sbx-disabled {
     background-color: #ececec !important;
     pointer-events: none;
 }
