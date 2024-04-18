@@ -16,19 +16,6 @@ const data = [
     {text: "Swift", disable: false},
     {text: "Kotlin", disable: false},
     {text: "TensorFlow", disable: true},
-    {text: "PyTorch", disable: false},
-    {text: "MongoDB", disable: true},
-    {text: "MySQL", disable: false},
-    {text: "PostgreSQL", disable: false},
-    {text: "Firebase", disable: false},
-    {text: "Docker", disable: false},
-    {text: "Kubernetes", disable: false},
-    {text: "Amazon Web Services", disable: false},
-    {text: "Microsoft Azure", disable: false},
-    {text: "Linux", disable: true},
-    {text: "Windows", disable: false},
-    {text: "MacOS", disable: true},
-    {text: "Android", disable: false}
 ];
 
 class SelectBox {
@@ -37,191 +24,209 @@ class SelectBox {
         this.element = element
         this.config = config
 
+        this.milisecondsToOpen = 1
+        this.milisecondsToClose = 100
+        this.selectContainerElement = null
+        this.icon = null
+        this.btnText = null
+        this.optionsText = []
+        this.options = []
+        this.searchInput = null
+
         this.generateSelectBox()
     }
 
-    generateHeader(){
+    createHeader(){
         const selectBtn = document.createElement("div")
-        selectBtn.classList.add("select-btn")
+        selectBtn.classList.add("sbx-select-btn")
         selectBtn.addEventListener("click", this.toogleOptions)
 
         const btn = document.createElement("span")
-        btn.classList.add("sBtn-text")
+        btn.classList.add("sbx-sBtn-text")
         btn.innerText = this.config.name
+        this.btnText = btn
 
         const icon = document.createElement("i")
         icon.classList.add("bi", "bi-chevron-left")
+        this.icon = icon 
 
         selectBtn.appendChild(btn)
         selectBtn.appendChild(icon)
-
         return selectBtn
     }
 
-    generateInputSearch(){
+    createInputSearch(){
         const search = document.createElement("div")
-        search.classList.add("search")
+        search.classList.add("sbx-search")
 
         const icon = document.createElement("i")
         search.classList.add("bi","bi-search")
 
         const searchInput = document.createElement("input")
         searchInput.setAttribute("type","search")
-        searchInput.setAttribute("id","input-search")
+        searchInput.setAttribute("id","sbx-input-search")
         searchInput.setAttribute("placeholder","Pesquisar...")
-        searchInput.setAttribute("value", "")
         searchInput.addEventListener("input", e => this.searchOptions(e))
+        this.searchInput = searchInput
 
         search.appendChild(icon)
         search.appendChild(searchInput)
-
         return search
     }
 
-    generateOptions(){
+    createOptions(){
         const ul = document.createElement("ul")
 
         this.config.options.forEach(option => {
-
             const li = document.createElement("li")
-            li.classList.add("option")
+            li.classList.add("sbx-option")
             li.addEventListener("click", e => this.toogleValueHeader(e))
 
             const icon = document.createElement("i")
             icon.classList.add("bi","bi-play")
 
             const optinoText = document.createElement("span")
-            optinoText.classList.add("option-text")
+            optinoText.classList.add("sbx-option-text")
             optinoText.innerText = option
 
             if (typeof option === "object") {
                 optinoText.innerText = option.text
-
-                if (option.disable) li.classList.add("disabled")
+                if (option.disable) {
+                    li.classList.add("sbx-disabled")
+                }
             }
 
             li.appendChild(icon)
             li.appendChild(optinoText)
-
             ul.appendChild(li)
-        });
 
+            this.optionsText.push(optinoText)
+            this.options.push(li)
+        });
         return ul
     }
 
     screenPosition(){
         const coordinates = this.element.getBoundingClientRect()
-        const verticalPosition = coordinates.top + coordinates.height / 2
-    
-        if (verticalPosition > window.innerHeight / 2) return "down"
-
+        const half = 2
+        const verticalPosition = coordinates.top + coordinates.height / half
+        if (verticalPosition > window.innerHeight / half) {
+            return "down"
+        }
         return "up"
     }
 
+    openOptions() {
+        this.selectContainerElement.classList.remove("sbx-hide")
+
+        setTimeout(() => {
+            this.selectContainerElement.classList.add("sbx-height")
+        }, this.milisecondsToOpen)
+    }
+
+    closeOptions() {
+        this.selectContainerElement.classList.remove("sbx-height")
+
+        setTimeout(() => {
+            this.selectContainerElement.classList.add("sbx-hide")
+            this.icon.classList.remove("sbx-rotate-down")    
+            this.icon.classList.remove("sbx-rotate-up")    
+
+            this.searchInput.value = ""
+            this.options.forEach(option => {
+                option.classList.remove("sbx-hide")
+            })    
+        }, this.milisecondsToClose)
+    }
+
+    setDown() {
+        this.selectContainerElement.classList.add("sbx-open-up")
+        this.icon.classList.remove("sbx-rotate-down")    
+        this.icon.classList.add("sbx-rotate-up")
+    }
+
+    setUp() {
+        this.selectContainerElement.classList.remove("sbx-open-up")
+        this.icon.classList.remove("sbx-rotate-up") 
+        this.icon.classList.add("sbx-rotate-down")    
+    }
+
     toogleOptions = () => {
-        const selectContainer = document.querySelector(".select-container")
-        
-        if (selectContainer.classList.contains("hide")) {
-            selectContainer.classList.remove("hide")
-            setTimeout(() => selectContainer.classList.add("height"), 1)
-
+        if (this.selectContainerElement.classList.contains("sbx-hide")) {
+            this.openOptions()
         } else {
-
-            selectContainer.classList.remove("height")
-            setTimeout(() => {
-                selectContainer.classList.add("hide")
-                icon.classList.remove("rotate-down")    
-                icon.classList.remove("rotate-up")    
-            }, 100)
+            this.closeOptions()
         }
-        
-        const icon = document.querySelector(".select-btn i")
+    
+        const position = this.screenPosition()
 
-        if (this.screenPosition() === "down") {
-            selectContainer.classList.add("open-up")
-            icon.classList.remove("rotate-down")    
-            icon.classList.add("rotate-up")
-            return
-        } 
-
-        selectContainer.classList.remove("open-up")
-        icon.classList.remove("rotate-up") 
-        icon.classList.add("rotate-down")    
+        if (position === "down") {
+            this.setDown()
+        } else {
+            this.setUp()
+        }
     }
 
     searchOptions(e){
-        const target = e.target.value.toLowerCase()
+        const wordSearch = e.target.value.toLowerCase()
 
-        const optionsText = document.querySelectorAll(".option-text")
-        const options = document.querySelectorAll(".option")
-
-        optionsText.forEach((option, index) => {
-
-            if (option.innerText.toLowerCase().includes(target)) {
-                options[index].classList.remove("hide")
+        this.optionsText.forEach((option, index) => {
+            if (option.innerText.toLowerCase().includes(wordSearch)) {
+                this.options[index].classList.remove("sbx-hide")
                 return
             } 
-            options[index].classList.add("hide")
+            this.options[index].classList.add("sbx-hide")
         })
     }
 
     toogleValueHeader(e){
-        const target = e.target.innerText
-        const sBtnText = document.querySelector(".sBtn-text")
-        const selectContainer = document.querySelector(".select-container")
+        const optionValue = e.target.innerText
+        this.btnText.innerText = optionValue
+        this.btnText.value = optionValue
 
-        sBtnText.innerText = target
-        sBtnText.value = target
+        this.icon.classList.remove("sbx-rotate-up") 
+        this.icon.classList.remove("sbx-rotate-down")    
 
-        const icon = document.querySelector(".select-btn i")
-        icon.classList.remove("rotate-up") 
-        icon.classList.remove("rotate-down")    
-
-        selectContainer.classList.remove("height")
-        setTimeout(() => selectContainer.classList.add("hide"), 100)
+        this.closeOptions()
     }
 
-    openDownOrUp() {
+    autoSetDownOrUp() {
         window.addEventListener("scroll", () => {
-            const selectContainer = document.querySelector(".select-container")
-            const icon = document.querySelector(".select-btn i")
-        
-            if (selectContainer.classList.contains("hide")) return
-
-            if (this.screenPosition() === "down") {
-                selectContainer.classList.add("open-up")
-                icon.classList.remove("rotate-down")    
-                icon.classList.add("rotate-up")
+            if (this.selectContainerElement.classList.contains("sbx-hide")){
                 return
             } 
 
-            selectContainer.classList.remove("open-up")
-            icon.classList.remove("rotate-up") 
-            icon.classList.add("rotate-down")    
+            if (this.screenPosition() === "down") {
+                this.setDown()
+                return
+            } 
+
+            this.setUp()   
         })
     }
 
     generateSelectBox(){
-        const selectMenu = document.createElement("div")
-        selectMenu.classList.add("select-menu")
-
         const selectContainer = document.createElement("div")
-        selectContainer.classList.add("select-container", "hide")
+        const inputSearch = this.createInputSearch()
+        const options = this.createOptions()
+        const selectMenu = document.createElement("div")
+        const header = this.createHeader()
 
-        selectMenu.appendChild(this.generateHeader())
+        selectContainer.classList.add("sbx-select-container", "sbx-hide")
+        if (this.config.inputSearch) selectContainer.appendChild(inputSearch)
+        selectContainer.appendChild(options)
 
-        if (this.config.inputSearch) selectContainer.appendChild(this.generateInputSearch())
-        
-        selectContainer.appendChild(this.generateOptions())
-
+        selectMenu.classList.add("sbx-select-menu")
+        selectMenu.appendChild(header)
         selectMenu.appendChild(selectContainer)
 
-        this.openDownOrUp()
+        this.autoSetDownOrUp()
+        this.selectContainerElement = selectContainer
 
         document.addEventListener("click", e => {
-            if (!selectMenu.contains(e.target) && e.target !== this.inputSearch){
-                selectContainer.classList.remove("height")
-                setTimeout(() => selectContainer.classList.add("hide"), 100)
+            const element = e.target
+            if (!selectMenu.contains(element) && element !== this.inputSearch){
+                this.closeOptions()
             }
         });
 
@@ -230,16 +235,23 @@ class SelectBox {
 }
 
 const here = document.querySelector(".here")
+const here2 = document.querySelector(".here2")
 
 const select = new SelectBox(
     // Container onde será injetado o select box
     here,
     {
-        name: "Select your option",
-
+        name: "Select your option1",
         // escolha se terá caixa de pesquisa ou não
         inputSearch: true,
-
         // Aceita um array de strings ou um obj com text e disabled true ou false
         options: data
-     })
+})
+
+const select2 = new SelectBox(
+    here2,
+    {
+        name: "Select your option2",
+        inputSearch: true,
+        options: data
+})
